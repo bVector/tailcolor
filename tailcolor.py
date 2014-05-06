@@ -18,7 +18,6 @@ class heatmap():
         else:
             scaler = self.scale
         fade = max(min(200 - self.age()*scaler,0),-120)
-        #print fade
         r = 255 + fade
         g = min((self.age()*scaler), 255) + fade
         b = g
@@ -42,6 +41,7 @@ if __name__ == '__main__':
 
     lines = ['-']
     print ""
+    delay = 0.01
     term = blessings.Terminal()
 
     try:
@@ -59,9 +59,11 @@ if __name__ == '__main__':
                         if char == '\n': 
                             if len(lines)>term.height-1: lines.pop(0)
                             lines.append(heatmap(line,1))
+                            delay = 0
                             line = ''
                             break
-            time.sleep(0.1)
+            time.sleep(delay)
+            delay = min(delay + 0.01, 1)
             for x in range(term.height-1):
                 with term.location(0, x): 
                     try:
