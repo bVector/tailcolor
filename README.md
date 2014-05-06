@@ -1,5 +1,7 @@
-Requires fabulous and blessings
+Requires fabulous and blessings:
+
 pip install fabulous
+
 pip install blessings
 
 Works best with line-buffered output.
