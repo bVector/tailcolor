@@ -36,12 +36,16 @@ def run():
     import sys, os, time
     import blessings
 
-    f = subprocess.Popen(
-    	['tail','-F',sys.argv[1]],
-    	stdout=subprocess.PIPE,
-    	stderr=subprocess.PIPE)
-    p = select.poll()
-    p.register(f.stdout)
+    try:
+        f = subprocess.Popen(\
+    	    ['tail','-F',sys.argv[1]],
+    	    stdout=subprocess.PIPE,
+    	    stderr=subprocess.PIPE)
+        p = select.poll()
+        p.register(f.stdout)
+    except IndexError:
+        print 'Usage: tailcolor [file]'
+        return False
 
     lines = ['-']
     print ""
