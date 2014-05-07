@@ -27,7 +27,11 @@ class heatmap():
     def __str__(self):
         return str(fg256(self.redfade(), self.text))
 
+
 if __name__ == '__main__':
+    run()
+
+def run():
     import subprocess, select
     import sys, os, time
     import blessings
