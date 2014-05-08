@@ -82,4 +82,6 @@ def run():
                     except IndexError:
                         print term.clear_eol
     except KeyboardInterrupt:
+        pass
+    finally:
         os.system('setterm -cursor on')
