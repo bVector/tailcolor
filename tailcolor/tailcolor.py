@@ -1,9 +1,28 @@
-#!/usr/bin/env python
-import fabulous
+import blessings, fabulous
 from fabulous.color import *
-import time
+import time, os, itertools
+from sarge import run, Capture
 
-class heatmap():
+class HeatmapTerminal(object):
+    def __init__(self):
+        self.term = blessings.Terminal()
+        self.lines = []
+
+    def addline(self, linetext, scale=1):
+        linetext = linetext.replace('\n','')
+        self.lines.append(Heatmap(linetext, scale=scale))
+        while len(self.lines) >= self.term.height:
+            _ = self.lines.pop(0)
+
+    def draw(self):
+        for text, height in itertools.izip_longest(
+                reversed(self.lines),
+                reversed(range(self.term.height-1)),
+                fillvalue = ''):
+            with self.term.location(0,height):
+                print text, self.term.clear_eol
+
+class Heatmap(object):
     def __init__(self, text, scale=1):
         self.text = text
         self.time = int(time.time()*5)
@@ -27,61 +46,19 @@ class heatmap():
     def __str__(self):
         return str(fg256(self.redfade(), self.text))
 
-
 if __name__ == '__main__':
     run()
 
 def run():
-    import subprocess, select
-    import sys, os, time
-    import blessings
-
     try:
-        f = subprocess.Popen(\
-    	    ['tail','-F',sys.argv[1]],
-    	    stdout=subprocess.PIPE,
-    	    stderr=subprocess.PIPE)
-        p = select.poll()
-        p.register(f.stdout)
-    except IndexError:
-        print 'Usage: tailcolor [file]'
-        return False
-
-    lines = ['-']
-    print ""
-    delay = 0.01
-    term = blessings.Terminal()
-
-    try:
-        os.system('setterm -cursor off')
+        term = HeatmapTerminal()
+        term.addline('asdf')
+        p = run('cat', input=sys.stdin, async=True, stdout=Capture(buffer_size=1))
         while True:
-            ready = p.poll(1)
-            line = ''
-            if ready:
-                if ready[0][1] == select.POLLHUP:
-                    break
-                if ready[0][1] == select.POLLIN:
-                    while ready[0][1] & select.POLLIN:
-                        char = f.stdout.read(1)
-                        line += char
-                        if char == '\n': 
-                            if len(lines)>term.height-1: lines.pop(0)
-                            lines.append(heatmap(line,1))
-                            delay = 0
-                            line = ''
-                            break
-            time.sleep(delay)
-            delay = min(delay + 0.01, 1)
-            for x in range(term.height-1):
-                with term.location(0, x): 
-                    try:
-                        if x < len(lines):
-                            print str(lines[x+1]).replace('\n','') + term.clear_eol
-                        else:
-                            print term.clear_eol
-                    except IndexError:
-                        print term.clear_eol
-    except KeyboardInterrupt:
-        pass
+            line = p.stdout.readline()
+            if line: term.addline(line)
+            term.draw()
+            time.sleep(0.25)
     finally:
-        os.system('setterm -cursor on')
+        p.wait()
+        p.close()
