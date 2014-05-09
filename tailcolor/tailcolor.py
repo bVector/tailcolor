@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import blessings, fabulous
 from fabulous.color import *
 import time, os, itertools
@@ -10,17 +11,30 @@ class HeatmapTerminal(object):
 
     def addline(self, linetext, scale=1):
         linetext = linetext.replace('\n','')
+        linetext = linetext.replace('\t',' '*8)
         self.lines.append(Heatmap(linetext, scale=scale))
+        with self.term.location(self.term.width, self.term.height):
+            print ''
         while len(self.lines) >= self.term.height:
             _ = self.lines.pop(0)
 
     def draw(self):
+#        with self.term.location(self.term.width,self.term.height):
+#            print ''
         for text, height in itertools.izip_longest(
                 reversed(self.lines),
                 reversed(range(self.term.height-1)),
-                fillvalue = ''):
-            with self.term.location(0,height):
-                print text, self.term.clear_eol
+                fillvalue = -1):
+#            with self.term.location(0,height):
+#                if text: 
+#                    print self.term.clear_eol + '>printing {0} on line {1}'.format(text, height),
+#                    time.sleep(1.25)
+            with self.term.location(-1,height):
+                if text != -1:
+                    if height == 0:
+                        print self.term.clear_bol + text.text
+                    else:
+                        print self.term.clear_bol + str(text) + self.term.clear_eol
 
 class Heatmap(object):
     def __init__(self, text, scale=1):
@@ -46,19 +60,23 @@ class Heatmap(object):
     def __str__(self):
         return str(fg256(self.redfade(), self.text))
 
-if __name__ == '__main__':
-    run()
-
-def run():
+def runloop():
     try:
+        os.system('setterm -cursor off')
         term = HeatmapTerminal()
-        term.addline('asdf')
-        p = run('cat', input=sys.stdin, async=True, stdout=Capture(buffer_size=1))
+        p = run('cat', input=sys.stdin, async=True, stdout=Capture(buffer_size=1), stderr=Capture())
         while True:
             line = p.stdout.readline()
             if line: term.addline(line)
             term.draw()
-            time.sleep(0.25)
+            time.sleep(0.01)
+    except KeyboardInterrupt:
+        term.term.move(term.term.width, term.term.height)
+        print 'end'
     finally:
+        os.system('setterm -cursor on')
         p.wait()
         p.close()
+
+if __name__ == '__main__':
+    runloop()
