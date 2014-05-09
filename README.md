@@ -1,15 +1,17 @@
 ###### Requirements:
-Requires fabulous and blessings:
+Requires fabulous, sarge, and blessings:
 
 ```
 pip install fabulous
 pip install blessings
+pip install sarge
 ```
 
 ###### Usage
 
-Usage: tailcolor.py [file to follow]
+Usage: tail -F [file to follow] | tailcolor
+(works with most stdin pipes)
 
 ###### Known issues
 - Lines do not wrap
-- Hangs with some non-line-buffered output: If you're writing to a file, 'stdbuf -oL -eL [command]' works well if the command doesnt have line buffered output (tcpdump has -l)
+- Issues with buffered output: If you're writing to a file, 'stdbuf -oL -eL [command]' works well if the command you're piping through doesnt have line buffered output (e.g. tcpdump has -l) http://sarge.readthedocs.org/en/latest/tutorial.html#buffering-issues
