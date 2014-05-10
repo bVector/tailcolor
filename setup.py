@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='tailcolor',
-    version='0.2.2',
+    version='0.2.3',
     description="'tail -F' with color feedback based on how recent the line was seen",
     url='https://github.com/bVector/tailcolor',
     author='bVector',

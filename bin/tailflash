@@ -1,9 +1,4 @@
 #!/usr/bin/env python
 import tailcolor
-import sys
 
-try:
-    print sys.argv[1]
-    tailcolor.runloop(pattern=sys.argv[1])
-except IndexError:
-    tailcolor.runloop()
+tailcolor.runloop(pattern='flashing')
