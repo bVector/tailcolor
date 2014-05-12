@@ -1,7 +1,7 @@
 ## Installation:
 
 ```
-pip install tailcolor
+pip install tailcolor --pre
 ```
 
 
