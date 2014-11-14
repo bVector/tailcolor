@@ -6,6 +6,7 @@ from sarge import run, Capture
 from math import sin, pi
 
 class HeatmapTerminal(object):
+	"""Initialize HeatmapTerminal class. """
     def __init__(self, pattern='redfade'):
         self.term = blessings.Terminal()
         self.lines = []
@@ -54,6 +55,7 @@ class Heatmap(object):
         self.scale = scale
 
     def age(self):
+	    """Returns age of text."""
         return (int(time.time()*5) - self.time)
 
     def flashing(self):
@@ -95,6 +97,7 @@ class Heatmap(object):
         return (r, g, b)
 
     def __str__(self):
+	    """Return string representation of text color."""
         color = self.color()
         return str(fg256(color, (self.text)))
 
